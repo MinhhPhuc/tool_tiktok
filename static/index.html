@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đăng TikTok đa tài khoản</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2F3F8; --surface:#FFFFFF; --ink:#161A2E; --muted:#5E6580; --line:#DFE2EC;
+  --accent:#FE2C55; --accent-ink:#FFFFFF; --accent-soft:#FFE9EE; --cyan:#17CFCA;
+  --ok:#0B8A5F; --ok-soft:#DDF5EB; --warn:#9A6208; --warn-soft:#FFF1D6; --err:#C81F39; --err-soft:#FFE3E8;
+  --info:#3A4BD6; --info-soft:#E6E9FF; --phone:#14172B;
+  --font:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0F1224; --surface:#181C33; --ink:#ECEEF8; --muted:#9AA1BD; --line:#2A2F4D;
+    --accent-soft:#3A1A29; --ok:#3DD598; --ok-soft:#10372C; --warn:#F2B84B; --warn-soft:#3A2D10;
+    --err:#FF6B81; --err-soft:#3C1A23; --info:#8E9BFF; --info-soft:#232A5C; --phone:#0A0C1A;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--font);min-height:100vh}
+h2{font-size:19px;line-height:1.25;font-weight:800;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+[hidden]{display:none!important}
+small,.hint{font-size:13px;color:var(--muted)}
+
+/* khung trang */
+.top{display:flex;align-items:center;justify-content:space-between;max-width:1320px;margin:0 auto;padding:18px 24px 0}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:17px}
+.mark{position:relative;width:28px;height:28px;flex:none}
+.mark::before,.mark::after{content:"";position:absolute;inset:0;border-radius:9px}
+.mark::before{background:var(--cyan);transform:translate(-3px,-3px)}
+.mark::after{background:var(--accent);transform:translate(3px,3px);mix-blend-mode:multiply}
+.grid{display:grid;grid-template-columns:300px minmax(0,1fr) 290px;gap:28px;max-width:1320px;margin:0 auto;padding:24px;align-items:start}
+.queue{max-width:1320px;margin:0 auto;padding:8px 24px 64px}
+
+.btn{white-space:nowrap;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:600;font-size:14px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);padding:12px 24px;font-weight:600;font-size:15px}
+.btn.primary:hover{filter:brightness(.94)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.btn.quiet{border-color:transparent;background:transparent;color:var(--muted);padding:6px 10px}
+.btn.quiet:hover{color:var(--ink);background:var(--line)}
+
+/* tài khoản */
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.sec-head h2{white-space:nowrap}
+.all{margin:0 0 8px -10px}
+.acc-list{display:grid;gap:8px}
+.acc{position:relative}
+.acc-tile{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 10px;border-radius:16px;background:var(--surface);border:2px solid transparent;cursor:pointer;position:relative}
+.acc-tile:hover{border-color:var(--line)}
+.acc.on .acc-tile{border-color:var(--accent);background:var(--accent-soft)}
+.acc-tile input{position:absolute;opacity:0;pointer-events:none}
+.acc-tile:has(input:focus-visible){outline:3px solid var(--cyan);outline-offset:2px}
+.acc-text{display:grid;min-width:0;flex:1}
+.acc-text b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acc-text small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bad{color:var(--err);font-weight:600}
+.tick{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;margin-right:34px}
+.acc.on .tick{background:var(--accent);border-color:var(--accent)}
+.acc.on .tick::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:translateY(-1px) rotate(-45deg)}
+.acc-x{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--muted);font-size:13px;padding:4px 8px;border-radius:8px;opacity:0}
+.acc:hover .acc-x,.acc-x:focus-visible{opacity:1}
+.acc-x:hover{color:var(--err);background:var(--err-soft)}
+@media (hover:none){.acc-x{opacity:1}}
+.av{position:relative;display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--c,#5B6CFF);color:#fff;font-weight:800;flex:none;overflow:hidden}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.empty{border:2px dashed var(--line);border-radius:16px;padding:20px;color:var(--muted);font-size:14px}
+
+/* soạn bài */
+.composer{background:var(--surface);border-radius:24px;padding:28px;display:grid;gap:22px}
+.drop{display:grid;place-items:center;text-align:center;gap:4px;border:2px dashed var(--line);border-radius:18px;padding:28px 16px;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop:has(input:focus-visible){outline:3px solid var(--cyan);outline-offset:2px}
+.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.drop b{font-weight:600}
+.drop.has b{color:var(--ok)}
+.field{display:grid;gap:8px}
+.field>label,.field>legend,.lbl{font-weight:600;font-size:14px}
+fieldset.field{border:0;padding:0;margin:0;min-width:0}
+textarea,select,input[type=text],input[type=password],input[type=number],input[type=datetime-local]{width:100%;border:1.5px solid var(--line);background:var(--paper);border-radius:14px;padding:11px 14px;outline:none}
+textarea:focus,select:focus,input:focus-visible{border-color:var(--cyan);box-shadow:0 0 0 3px color-mix(in srgb,var(--cyan) 30%,transparent)}
+textarea{resize:vertical;min-height:110px}
+.count{justify-self:end;font-size:13px;color:var(--muted)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--paper);border-radius:14px;padding:4px;gap:4px}
+.seg label{position:relative;text-align:center;padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;color:var(--muted)}
+.seg input{position:absolute;opacity:0}
+.seg label:has(input:checked){background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(20,24,43,.18)}
+.seg label:has(input:focus-visible){outline:3px solid var(--cyan)}
+.sched{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sched label.chk{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;cursor:pointer}
+.sched input[type=datetime-local]{width:auto}
+.send{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:6px;border-top:1px solid var(--line)}
+.send p{margin:0;font-size:14px;color:var(--muted)}
+
+/* điện thoại xem trước */
+.preview{position:sticky;top:20px}
+.phone{position:relative;width:100%;max-width:270px;margin:0 auto;aspect-ratio:9/16;background:var(--phone);border-radius:36px;overflow:hidden;border:6px solid var(--phone);box-shadow:0 0 0 2px var(--line)}
+.phone video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.phone .none{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#9AA1BD;padding:24px;font-size:14px}
+.phone .shade{position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(transparent,rgba(10,12,26,.82))}
+.phone .meta{position:absolute;left:14px;right:62px;bottom:18px;color:#fff;display:grid;gap:6px;font-size:13px}
+.phone .meta b{font-weight:800;font-size:14px}
+.phone .meta span{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.phone .stack{position:absolute;right:12px;bottom:22px;display:flex;flex-direction:column-reverse}
+.phone .stack .av{width:34px;height:34px;font-size:13px;border:2px solid #fff;margin-top:-8px}
+.pv-note{text-align:center;margin-top:12px}
+
+/* hàng đợi */
+.table-wrap{overflow-x:auto;background:var(--surface);border-radius:20px;margin-top:14px}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th{text-align:left;font-weight:600;font-size:13px;color:var(--muted);padding:14px 18px 10px}
+td{padding:14px 18px;border-top:1px solid var(--line);vertical-align:middle}
+td.vid{max-width:320px}
+.vname{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.vcap{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.who{display:flex;align-items:center;gap:10px;font-weight:500}
+.who .av{width:28px;height:28px;font-size:12px}
+.badge{display:inline-block;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;white-space:nowrap}
+[data-status=queued]{background:var(--paper);color:var(--muted)}
+[data-status=uploading],[data-status=processing]{background:var(--info-soft);color:var(--info)}
+[data-status=done]{background:var(--ok-soft);color:var(--ok)}
+[data-status=failed]{background:var(--err-soft);color:var(--err)}
+.bar{height:6px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden;width:140px}
+.bar i{display:block;height:100%;background:var(--cyan);transition:width .4s}
+.jerr{font-size:13px;color:var(--err);margin-top:6px;min-width:220px;max-width:340px;overflow-wrap:anywhere}
+.acts{display:flex;gap:4px;justify-content:flex-end}
+td.empty-row{text-align:center;color:var(--muted);padding:36px}
+
+/* hộp thoại */
+dialog{border:0;border-radius:24px;padding:28px;width:calc(100% - 32px);max-width:480px;background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(15,18,36,.55)}
+dialog h2{margin-bottom:6px}
+dialog .stack{display:grid;gap:16px;margin-top:18px}
+dialog .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:22px}
+dialog details{font-size:14px}
+dialog summary{cursor:pointer;color:var(--muted);font-weight:500}
+dialog ol{padding-left:18px;margin:8px 0 0;color:var(--muted);font-size:13px}
+.wait{display:flex;align-items:center;gap:12px;background:var(--info-soft);color:var(--info);padding:12px 14px;border-radius:14px;font-size:14px;font-weight:500}
+.spin{width:16px;height:16px;border-radius:50%;border:3px solid currentColor;border-right-color:transparent;animation:sp 0.8s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,24px);background:var(--ink);color:var(--paper);padding:12px 20px;border-radius:14px;font-weight:500;font-size:14px;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 32px);z-index:50}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast[data-kind=err]{background:var(--err);color:#fff}
+
+@media (max-width:1100px){
+  .grid{grid-template-columns:280px minmax(0,1fr)}
+  .preview{position:static;grid-column:1/-1}
+  .phone{max-width:230px}
+}
+@media (max-width:760px){
+  .brand{font-size:15px}
+  .grid{grid-template-columns:1fr;padding:16px;gap:20px}
+  .top,.queue{padding-left:16px;padding-right:16px}
+  .composer{padding:20px;border-radius:20px}
+  .row{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation-duration:2s!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="mark" aria-hidden="true"></span>Đăng TikTok đa tài khoản</div>
+  <button class="btn" id="btnSettings" type="button">Cài đặt</button>
+</header>
+
+<main class="grid">
+  <section aria-labelledby="h-acc">
+    <div class="sec-head">
+      <h2 id="h-acc">Tài khoản</h2>
+      <button class="btn" id="btnAdd" type="button">Thêm tài khoản</button>
+    </div>
+    <button class="btn quiet all" id="btnAll" type="button">Chọn tất cả</button>
+    <div class="acc-list" id="accList"></div>
+  </section>
+
+  <form class="composer" id="form" novalidate>
+    <h2>Bài đăng mới</h2>
+
+    <label class="drop" id="drop">
+      <input type="file" id="file" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm">
+      <b id="dropTitle">Chọn video hoặc kéo thả vào đây</b>
+      <small id="dropSub">MP4, MOV hoặc WebM. Video dọc 9:16 hiển thị đẹp nhất.</small>
+    </label>
+
+    <div class="field">
+      <label for="caption">Caption</label>
+      <textarea id="caption" maxlength="2200" placeholder="Viết mô tả và hashtag cho video"></textarea>
+      <span class="count"><span id="cnt">0</span>/2200</span>
+    </div>
+
+    <div class="row">
+      <fieldset class="field">
+        <legend>Cách đăng</legend>
+        <div class="seg">
+          <label><input type="radio" name="mode" value="direct" checked>Đăng ngay</label>
+          <label><input type="radio" name="mode" value="draft">Lưu vào nháp</label>
+        </div>
+        <span class="hint" id="modeHint">TikTok đăng video ngay khi xử lý xong.</span>
+      </fieldset>
+      <div class="field">
+        <label for="privacy">Ai xem được</label>
+        <select id="privacy">
+          <option value="SELF_ONLY">Chỉ mình tôi</option>
+          <option value="PUBLIC_TO_EVERYONE">Công khai</option>
+          <option value="MUTUAL_FOLLOW_FRIENDS">Bạn bè</option>
+          <option value="FOLLOWER_OF_CREATOR">Người theo dõi</option>
+        </select>
+        <span class="hint" id="privHint">App chưa được TikTok duyệt chỉ đăng được ở chế độ Chỉ mình tôi.</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="lbl">Thời gian</span>
+      <div class="sched">
+        <label class="chk"><input type="checkbox" id="schedOn">Hẹn giờ đăng</label>
+        <input type="datetime-local" id="schedAt" hidden aria-label="Thời gian hẹn giờ">
+      </div>
+    </div>
+
+    <div class="send">
+      <p id="summary">Chọn video và ít nhất một tài khoản.</p>
+      <button class="btn primary" id="submit" type="submit" disabled>Thêm vào hàng đợi</button>
+    </div>
+  </form>
+
+  <aside class="preview" aria-label="Xem trước bài đăng">
+    <div class="phone">
+      <video id="pvVideo" muted loop playsinline hidden></video>
+      <div class="none" id="pvNone">Chọn video để xem trước bài đăng</div>
+      <div class="shade"></div>
+      <div class="meta"><b id="pvUser">@tài_khoản</b><span id="pvCap"></span></div>
+      <div class="stack" id="pvStack"></div>
+    </div>
+    <p class="hint pv-note">Xem trước chỉ mang tính minh họa.</p>
+  </aside>
+</main>
+
+<section class="queue" aria-labelledby="h-q">
+  <h2 id="h-q">Hàng đợi</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Video</th><th>Tài khoản</th><th>Trạng thái</th><th><span class="sr" style="position:absolute;left:-9999px">Thao tác</span></th></tr></thead>
+      <tbody id="jobs"></tbody>
+    </table>
+  </div>
+</section>
+
+<dialog id="dlgAdd" aria-labelledby="t-add">
+  <h2 id="t-add">Thêm tài khoản TikTok</h2>
+  <small>Đặt một tên gọi để dễ nhận ra, rồi cấp quyền trên TikTok.</small>
+  <div class="stack">
+    <div class="field">
+      <label for="addName">Tên gọi</label>
+      <input type="text" id="addName" maxlength="40" placeholder="Ví dụ: shop_a" autocomplete="off">
+    </div>
+    <div class="wait" id="addWait" hidden><span class="spin"></span>Đang chờ bạn cho phép trên TikTok...</div>
+    <details id="addManual" hidden>
+      <summary>Trình duyệt không tự quay lại ứng dụng?</summary>
+      <ol><li>Sau khi cho phép, copy toàn bộ URL trên thanh địa chỉ (kể cả khi trang báo lỗi).</li><li>Dán vào ô bên dưới rồi bấm Hoàn tất.</li></ol>
+      <div class="field" style="margin-top:10px"><input type="text" id="addUrl" placeholder="http://localhost:5000/callback?code=..." aria-label="URL chuyển hướng"></div>
+      <div class="foot" style="margin-top:10px"><button class="btn" type="button" id="addFinish">Hoàn tất</button></div>
+    </details>
+    <small>Mẹo: mỗi tài khoản nên đăng nhập trong cửa sổ ẩn danh hoặc hồ sơ trình duyệt riêng để không bị nhầm tài khoản.</small>
+  </div>
+  <div class="foot">
+    <button class="btn quiet" type="button" data-close>Đóng</button>
+    <button class="btn primary" type="button" id="addGo">Mở trang cấp quyền</button>
+  </div>
+</dialog>
+
+<dialog id="dlgSet" aria-labelledby="t-set">
+  <h2 id="t-set">Cài đặt</h2>
+  <small>Lấy thông tin app tại developers.tiktok.com, mục Manage apps. App cần bật Content Posting API.</small>
+  <div class="stack">
+    <div class="field"><label for="setKey">Client key</label><input type="text" id="setKey" autocomplete="off"></div>
+    <div class="field"><label for="setSecret">Client secret</label><input type="password" id="setSecret" autocomplete="off" placeholder="Để trống nếu giữ nguyên"></div>
+    <div class="field"><label for="setRedirect">Redirect URI</label><input type="text" id="setRedirect" autocomplete="off">
+      <span class="hint">Phải trùng với URI đã khai báo trong app TikTok. TikTok thường yêu cầu https, bạn có thể dùng một đường hầm như ngrok trỏ về cổng 5000 rồi thêm /callback.</span></div>
+    <div class="field"><label for="setName">Tên app (hiện trên trang Terms và Privacy)</label><input type="text" id="setName" maxlength="60" autocomplete="off"></div>
+    <div class="field"><label for="setEmail">Email liên hệ (hiện trên trang Terms và Privacy)</label><input type="text" id="setEmail" maxlength="100" autocomplete="off"></div>
+    <div class="field"><label for="setDelay">Nghỉ giữa các lần đăng (giây)</label><input type="number" id="setDelay" min="0" max="3600">
+      <span class="hint">Nên để từ 30 giây trở lên để tránh bị TikTok nghi spam.</span></div>
+  </div>
+  <div class="foot">
+    <button class="btn quiet" type="button" data-close>Hủy</button>
+    <button class="btn primary" type="button" id="setSave">Lưu cài đặt</button>
+  </div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const PRIV = {PUBLIC_TO_EVERYONE:'Công khai', MUTUAL_FOLLOW_FRIENDS:'Bạn bè', FOLLOWER_OF_CREATOR:'Người theo dõi', SELF_ONLY:'Chỉ mình tôi'};
+const COLORS = ['#5B6CFF','#12948A','#D6334C','#B7740B','#8E4EC6','#2A7FC0'];
+const state = { accounts: [], selected: new Set(), jobs: [], file: null, url: null };
+let jobsSig = '', addTimer = null;
+
+function toast(msg, kind = 'ok') {
+  const t = $('#toast'); t.textContent = msg; t.dataset.kind = kind; t.classList.add('show');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 4500);
+}
+async function api(path, opts = {}) {
+  const r = await fetch(path, opts); let j = {};
+  try { j = await r.json(); } catch {}
+  if (!r.ok) throw new Error(j.error || 'Lỗi ' + r.status);
+  return j;
+}
+const postJSON = (path, body) => api(path, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+const fmtTime = s => new Date(s * 1000).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' });
+const fmtSize = b => b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+
+function avatar(a) {
+  const chars = [...a.name];
+  const color = COLORS[chars.reduce((h, c) => h + c.charCodeAt(0), 0) % COLORS.length];
+  const img = a.avatar_url ? `<img src="${esc(a.avatar_url)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : '';
+  return `<span class="av" style="--c:${color}">${esc((chars[0] || '?').toUpperCase())}${img}</span>`;
+}
+
+/* ---------- tài khoản ---------- */
+function renderAccounts() {
+  const box = $('#accList');
+  $('#btnAll').hidden = !state.accounts.length;
+  if (!state.accounts.length) {
+    box.innerHTML = '<div class="empty">Chưa có tài khoản nào. Bấm Thêm tài khoản để cấp quyền cho tài khoản TikTok đầu tiên.</div>';
+    return;
+  }
+  box.innerHTML = state.accounts.map(a => {
+    const on = state.selected.has(a.name);
+    const sub = a.needs_reconnect ? '<span class="bad">Cần kết nối lại</span>' : esc(a.display_name || 'Đã kết nối');
+    return `<div class="acc ${on ? 'on' : ''}">
+      <label class="acc-tile"><input type="checkbox" data-acc="${esc(a.name)}" ${on ? 'checked' : ''}>
+        ${avatar(a)}<span class="acc-text"><b>${esc(a.name)}</b><small>${sub}</small></span><span class="tick" aria-hidden="true"></span></label>
+      <button type="button" class="acc-x" data-rm="${esc(a.name)}" aria-label="Gỡ tài khoản ${esc(a.name)}">Gỡ</button></div>`;
+  }).join('');
+}
+async function loadAccounts() {
+  state.accounts = await api('/api/accounts');
+  for (const n of [...state.selected]) if (!state.accounts.some(a => a.name === n)) state.selected.delete(n);
+  renderAccounts(); refreshComposer(); renderJobs(true);
+}
+$('#accList').addEventListener('change', e => {
+  const n = e.target.dataset.acc; if (!n) return;
+  e.target.checked ? state.selected.add(n) : state.selected.delete(n);
+  e.target.closest('.acc').classList.toggle('on', e.target.checked);
+  refreshComposer();
+});
+$('#accList').addEventListener('click', async e => {
+  const n = e.target.dataset.rm; if (!n) return;
+  if (!confirm(`Gỡ tài khoản "${n}"? Bạn có thể thêm lại sau.`)) return;
+  try { await api('/api/accounts/' + encodeURIComponent(n), { method: 'DELETE' }); toast(`Đã gỡ ${n}`); await loadAccounts(); }
+  catch (er) { toast(er.message, 'err'); }
+});
+$('#btnAll').onclick = () => {
+  const all = state.accounts.length === state.selected.size;
+  state.selected = new Set(all ? [] : state.accounts.map(a => a.name));
+  renderAccounts(); refreshComposer();
+};
+
+/* ---------- soạn bài ---------- */
+function setFile(f) {
+  if (state.url) URL.revokeObjectURL(state.url);
+  state.file = f || null; state.url = f ? URL.createObjectURL(f) : null;
+  $('#drop').classList.toggle('has', !!f);
+  $('#dropTitle').textContent = f ? f.name : 'Chọn video hoặc kéo thả vào đây';
+  $('#dropSub').textContent = f ? fmtSize(f.size) + '. Bấm để đổi video khác.' : 'MP4, MOV hoặc WebM. Video dọc 9:16 hiển thị đẹp nhất.';
+  const v = $('#pvVideo');
+  if (f) { v.src = state.url; v.hidden = false; v.play().catch(() => {}); } else { v.removeAttribute('src'); v.hidden = true; }
+  $('#pvNone').hidden = !!f;
+  refreshComposer();
+}
+function refreshComposer() {
+  const accs = state.accounts.filter(a => state.selected.has(a.name));
+  $('#pvCap').textContent = $('#caption').value;
+  $('#pvUser').textContent = accs.length ? '@' + accs[0].name + (accs.length > 1 ? ' +' + (accs.length - 1) : '') : '@tài_khoản';
+  $('#pvStack').innerHTML = accs.slice(0, 3).map(avatar).join('');
+  const ok = state.file && accs.length;
+  $('#submit').disabled = !ok;
+  $('#summary').textContent = ok
+    ? `Sẽ thêm ${accs.length} bài vào hàng đợi, mỗi tài khoản một bài.`
+    : (!state.file ? 'Chọn video và ít nhất một tài khoản.' : 'Chọn ít nhất một tài khoản ở cột bên trái.');
+}
+$('#file').addEventListener('change', e => setFile(e.target.files[0]));
+const drop = $('#drop');
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => {
+  const f = e.dataTransfer.files[0]; if (!f) return;
+  const dt = new DataTransfer(); dt.items.add(f); $('#file').files = dt.files; setFile(f);
+});
+$('#caption').addEventListener('input', () => { $('#cnt').textContent = $('#caption').value.length; refreshComposer(); });
+document.querySelectorAll('input[name=mode]').forEach(r => r.addEventListener('change', () => {
+  const draft = document.querySelector('input[name=mode]:checked').value === 'draft';
+  $('#privacy').disabled = draft;
+  $('#modeHint').textContent = draft ? 'Video vào hộp thư của tài khoản. Bạn mở app TikTok để chỉnh và bấm đăng.' : 'TikTok đăng video ngay khi xử lý xong.';
+  $('#privHint').hidden = draft;
+}));
+$('#schedOn').addEventListener('change', e => {
+  $('#schedAt').hidden = !e.target.checked;
+  if (e.target.checked && !$('#schedAt').value) {
+    const d = new Date(Date.now() + 3600e3); d.setMinutes(0, 0, 0);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    $('#schedAt').value = d.toISOString().slice(0, 16);
+  }
+});
+$('#form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const fd = new FormData();
+  fd.append('video', state.file);
+  fd.append('caption', $('#caption').value);
+  fd.append('privacy', $('#privacy').value);
+  fd.append('mode', document.querySelector('input[name=mode]:checked').value);
+  fd.append('accounts', JSON.stringify([...state.selected]));
+  if ($('#schedOn').checked) {
+    const ts = new Date($('#schedAt').value).getTime() / 1000;
+    if (!ts) return toast('Chọn thời gian hẹn giờ', 'err');
+    if (ts < Date.now() / 1000) return toast('Thời gian hẹn giờ đã qua', 'err');
+    fd.append('scheduled_at', ts);
+  }
+  const btn = $('#submit'); btn.disabled = true; btn.textContent = 'Đang thêm...';
+  try {
+    const r = await api('/api/jobs', { method: 'POST', body: fd });
+    toast(`Đã thêm ${r.created.length} bài vào hàng đợi`);
+    $('#caption').value = ''; $('#cnt').textContent = '0'; $('#file').value = ''; setFile(null);
+    await loadJobs();
+  } catch (er) { toast(er.message, 'err'); }
+  btn.textContent = 'Thêm vào hàng đợi'; refreshComposer();
+});
+
+/* ---------- hàng đợi ---------- */
+function jobRow(j) {
+  const acc = state.accounts.find(a => a.name === j.account) || { name: j.account };
+  const label = { queued: 'Đang chờ', uploading: 'Đang tải lên', processing: 'TikTok đang xử lý',
+                  done: j.mode === 'draft' ? 'Đã gửi vào nháp' : 'Đã đăng', failed: 'Lỗi' }[j.status];
+  const active = j.status === 'uploading' || j.status === 'processing';
+  const when = j.status === 'queued' && j.scheduled_at ? `<div class="vcap">Hẹn lúc ${fmtTime(j.scheduled_at)}</div>` : '';
+  const mode = j.mode === 'draft' ? 'Nháp' : (PRIV[j.privacy] || j.privacy);
+  return `<tr>
+    <td class="vid"><span class="vname">${esc(j.video_name)}</span><span class="vcap">${esc(j.caption) || 'Không có caption'}</span></td>
+    <td><div class="who">${avatar(acc)}<span>${esc(j.account)}<br><small>${esc(mode)}</small></span></div></td>
+    <td><span class="badge" data-status="${j.status}">${label}</span>${when}
+      ${active ? `<div class="bar" role="progressbar" aria-valuenow="${j.progress}" aria-valuemin="0" aria-valuemax="100"><i style="width:${j.progress}%"></i></div>` : ''}
+      ${j.status === 'failed' && j.error ? `<div class="jerr">${esc(j.error)}</div>` : ''}</td>
+    <td><div class="acts">
+      ${j.status === 'failed' ? `<button class="btn" type="button" data-retry="${j.id}">Thử lại</button>` : ''}
+      ${active ? '' : `<button class="btn quiet" type="button" data-del="${j.id}">Xóa</button>`}</div></td></tr>`;
+}
+function renderJobs(force) {
+  const sig = JSON.stringify(state.jobs);
+  if (!force && sig === jobsSig) return;
+  jobsSig = sig;
+  $('#jobs').innerHTML = state.jobs.length ? state.jobs.map(jobRow).join('')
+    : '<tr><td colspan="4" class="empty-row">Hàng đợi đang trống. Chọn video và tài khoản, rồi bấm Thêm vào hàng đợi.</td></tr>';
+}
+async function loadJobs() { try { state.jobs = await api('/api/jobs'); renderJobs(); } catch {} }
+$('#jobs').addEventListener('click', async e => {
+  const retry = e.target.dataset.retry, del = e.target.dataset.del;
+  try {
+    if (retry) { await api(`/api/jobs/${retry}/retry`, { method: 'POST' }); toast('Đã đưa lại vào hàng đợi'); }
+    if (del) { await api(`/api/jobs/${del}`, { method: 'DELETE' }); toast('Đã xóa khỏi hàng đợi'); }
+    if (retry || del) loadJobs();
+  } catch (er) { toast(er.message, 'err'); }
+});
+
+/* ---------- hộp thoại ---------- */
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
+$('#dlgAdd').addEventListener('close', () => clearInterval(addTimer));
+$('#btnAdd').onclick = () => {
+  $('#addName').value = ''; $('#addUrl').value = ''; $('#addWait').hidden = true; $('#addManual').hidden = true;
+  $('#addGo').textContent = 'Mở trang cấp quyền';
+  $('#dlgAdd').showModal(); $('#addName').focus();
+};
+$('#addGo').onclick = async () => {
+  const name = $('#addName').value.trim();
+  if (!name) return toast('Nhập tên gọi cho tài khoản', 'err');
+  try {
+    const { url, started } = await postJSON('/api/accounts/connect', { name });
+    window.open(url, '_blank', 'noopener');
+    $('#addWait').hidden = false; $('#addManual').hidden = false; $('#addGo').textContent = 'Mở lại trang cấp quyền';
+    clearInterval(addTimer);
+    addTimer = setInterval(async () => {
+      try {
+        const list = await api('/api/accounts');
+        if (list.some(a => a.name === name && a.added_at >= started)) {
+          clearInterval(addTimer); $('#dlgAdd').close(); toast(`Đã kết nối ${name}`);
+          state.selected.add(name); await loadAccounts();
+        }
+      } catch {}
+    }, 2000);
+  } catch (er) { toast(er.message, 'err'); }
+};
+$('#addFinish').onclick = async () => {
+  try {
+    const r = await postJSON('/api/accounts/finish', { url: $('#addUrl').value });
+    clearInterval(addTimer); $('#dlgAdd').close(); toast(`Đã kết nối ${r.name}`);
+    state.selected.add(r.name); await loadAccounts();
+  } catch (er) { toast(er.message, 'err'); }
+};
+$('#btnSettings').onclick = async () => {
+  try {
+    const c = await api('/api/config');
+    $('#setKey').value = c.client_key; $('#setSecret').value = '';
+    $('#setSecret').placeholder = c.has_secret ? 'Đã lưu. Để trống nếu giữ nguyên' : 'Dán Client secret';
+    $('#setRedirect').value = c.redirect_uri; $('#setDelay').value = c.delay;
+    $('#setName').value = c.app_name; $('#setEmail').value = c.contact_email;
+    $('#dlgSet').showModal();
+  } catch (er) { toast(er.message, 'err'); }
+};
+$('#setSave').onclick = async () => {
+  try {
+    await postJSON('/api/config', { client_key: $('#setKey').value, client_secret: $('#setSecret').value,
+      redirect_uri: $('#setRedirect').value, delay: $('#setDelay').value,
+      app_name: $('#setName').value, contact_email: $('#setEmail').value });
+    $('#dlgSet').close(); toast('Đã lưu cài đặt');
+  } catch (er) { toast(er.message, 'err'); }
+};
+
+/* ---------- khởi động ---------- */
+(async () => {
+  await loadAccounts(); await loadJobs();
+  setInterval(loadJobs, 2000);
+  try { const c = await api('/api/config'); if (!c.client_key || !c.has_secret) toast('Bắt đầu bằng cách nhập Client key và Client secret trong Cài đặt'); } catch {}
+})();
+})();
+</script>
+</body>
+</html>

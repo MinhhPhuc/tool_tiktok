@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: tiktok-multi-uploader
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # BẮT BUỘC đúng 1 worker process: hàng đợi đăng bài chạy bằng một luồng nền trong process này
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 600
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: APP_PASSWORD        # mật khẩu đăng nhập dashboard (user: admin)
+        sync: false
+      - key: TIKTOK_CLIENT_KEY
+        sync: false
+      - key: TIKTOK_CLIENT_SECRET
+        sync: false
+      - key: APP_NAME            # hiện trên trang Terms/Privacy
+        sync: false
+      - key: CONTACT_EMAIL       # hiện trên trang Terms/Privacy
+        sync: false
+      - key: DATABASE_URL        # chuỗi kết nối Postgres ngoài (Neon, Supabase...) để giữ token khi Render xóa ổ đĩa
+        sync: false
